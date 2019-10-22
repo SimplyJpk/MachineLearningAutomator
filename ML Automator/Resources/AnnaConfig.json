@@ -1,0 +1,12 @@
+{
+  "train": "",
+  "no-graphics": "",
+  "env": "../MLScene/UnityEnvironment",
+  //"run-id": "TestTrain",
+  //"load": ,
+  //"curriculum": "./Resources/curriculum.json",
+  "keep-checkpoints": "50",
+  //"lesson": "0",
+  "save-freq": "50000",
+  "num-envs": "8"
+}

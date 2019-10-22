@@ -1,0 +1,28 @@
+default:
+    trainer: ppo
+    batch_size: 1024
+    beta: <BETA>
+    buffer_size: 10240
+    epsilon: <EPSILON>
+    hidden_units: <HIDDEN_UNITS>
+    lambd: <LAMBD>
+    learning_rate_schedule: linear
+    learning_rate: <LEARNRATE>
+    max_steps: 10000
+    normalize: false
+    num_epoch: <EPOCH>
+    num_layers: 2
+    time_horizon: <TIMEHORIZON>
+    summary_freq: 1000
+    use_recurrent: false
+    memory_size: 512
+    sequence_length: 64
+    vis_encode_type: simple
+    reward_signals: 
+        extrinsic:
+            strength: 1.0
+            gamma: <EXTRINSIC_GAMMA> 
+        curiosity:
+            strength: <CURIOSITY_STRENGTH>
+            gamma: <CURIOSITY_GAMMA>
+            encoding_size: 256
