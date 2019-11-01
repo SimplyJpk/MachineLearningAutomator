@@ -20,7 +20,15 @@ namespace ML_Automator
         private readonly string[] rankNames = new string[]{"Fastest", "Mean", "Step", "MeanReward"};
 
         private StreamWriter currentLog = null;
-        private string currentLogPath = string.Empty;
+
+        public string CurrentLogPath { get; private set; } = string.Empty;
+        public string CurrenResearchLogPath
+        {
+            get
+            {
+                return $"{researchStartPath}{CurrentLogPath}";
+            }
+        }
 
         private int updateCount = 0;
 
@@ -37,7 +45,6 @@ namespace ML_Automator
             // Folder for where old logs are moved to if duplicates are discovered.
             Util.CreateFolderIfNoneExists(researchBackupPath);
         }
-
         public void RankStepSessions()
         {
             foreach (var item in currentResearchData.Keys)
@@ -120,7 +127,7 @@ namespace ML_Automator
             if (currentLog != null)
                 currentLog.Close();
             currentLog = File.CreateText($"{researchStartPath}{name}/{logFileName}");
-            currentLogPath = name;
+            CurrentLogPath = name;
             // Create a new data point
             if (currentResearchData.ContainsKey(name))
                 currentResearchData.Remove(name);
@@ -139,7 +146,7 @@ namespace ML_Automator
             // Update Elapsed float
             elapsedTime = float.Parse(elapsed);
             // Update our session data
-            ResearchSessionData sessionData = currentResearchData[currentLogPath];
+            ResearchSessionData sessionData = currentResearchData[CurrentLogPath];
             sessionData.elapsedTime = float.Parse(elapsed);
             sessionData.totalReward += float.Parse(mean_reward);
             sessionData.UpdateBestMeanReward(int.Parse(steps), float.Parse(mean_reward));
@@ -157,7 +164,7 @@ namespace ML_Automator
             if (currentLog != null)
             {
                 // Since all trainning sessions take 50*1000 (50000) itterations
-                currentResearchData[currentLogPath].meanReward = currentResearchData[currentLogPath].totalReward / 50;
+                currentResearchData[CurrentLogPath].meanReward = currentResearchData[CurrentLogPath].totalReward / updateCount;
                 currentLog.WriteLine($"|--- COMPLETE ----");
                 currentLog.WriteLine($"Total Trainning Time: {elapsedTime}, Avg Step: {(elapsedTime / updateCount).ToString("0.0000")}");
                 currentLog.Close();
@@ -172,7 +179,7 @@ namespace ML_Automator
         public float meanReward = 0f;
         public float totalReward = 0f;
 
-        public float bestMeanReward = 0f;
+        public float bestMeanReward = float.NegativeInfinity;
         public int bestMeanAtStep = int.MinValue;
 
         public ResearchSessionData(string name)
