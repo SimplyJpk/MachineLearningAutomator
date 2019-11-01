@@ -1,0 +1,17 @@
+﻿{ 
+   "measure":"reward",
+   "min_lesson_length":15,
+   "signal_smoothing":true,
+   "thresholds":[ 
+      5.0,
+      10.0,
+      20.0
+   ],
+   "parameters":{ 
+      "Gravity":[ 
+         0.0,
+         -5.0,
+         -10.0
+      ]
+   }
+}
