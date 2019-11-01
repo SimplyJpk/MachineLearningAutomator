@@ -1,0 +1,23 @@
+https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Reward-Signals.md
+
+reward_signals:
+    extrinsic:
+	The extrinsic reward signal is simply the reward given by the environment. Remove it to force the agent to ignore the environment reward.
+        strength: 1.0 // Typically always 1
+        gamma: 0.99 // Typically 0.8 - 0.995
+		
+		
+    curiosity:
+	
+        strength: 0.02 // Typically 0.001 - 0.1 (Small)
+        gamma: 0.99 // Typically 0.8 - 0.995
+        encoding_size: 256 // Default 64 Typically, 64 - 256
+		learning_rate: 3e-4 // Typically 1e-5 - 1e-3 (Optional)
+		
+		
+    gail:
+	// Requires Recordings
+        strength: 0.01 // 0.01 - 1.0
+        gamma: 0.99 // 0.8 - 0.9
+        encoding_size: 128
+        demo_path: demos/ExpertPyramid.demo
