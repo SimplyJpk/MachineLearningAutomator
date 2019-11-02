@@ -132,7 +132,7 @@ namespace ML_Automator
 
             if (currentLog != null)
                 currentLog.Close();
-            currentLog = File.CreateText($"{researchStartPath}{step}/{logFileName}");
+            currentLog = File.CreateText($"{researchStartPath}{folderFilePathName}/{logFileName}");
             CurrentLogPath = folderFilePathName;
             // Create a new data point
             if (currentResearchData.ContainsKey(folderFilePathName))
