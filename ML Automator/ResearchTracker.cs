@@ -32,6 +32,7 @@ namespace ML_Automator
                 return $"{researchStartPath}{CurrentLogPath}";
             }
         }
+        public string CurrentResearchStepFolder { get; private set; }
 
         private int updateCount = 0;
 
@@ -109,6 +110,7 @@ namespace ML_Automator
         }
         public void StartNewLog(int step, int part, ref string activeYaml)
         {
+            CurrentResearchStepFolder = $"{researchStartPath}{stepName}{step}";
             string folderFilePathName = $"{stepName}{step}/{partName}{part}";
             elapsedTime = 0;
             updateCount = 0;
