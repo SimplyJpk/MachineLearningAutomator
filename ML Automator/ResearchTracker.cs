@@ -19,6 +19,9 @@ namespace ML_Automator
         private const string yamlFileName = "UsedYaml.yaml";
         private readonly string[] rankNames = new string[]{"Fastest", "Mean", "Step", "MeanReward"};
 
+        private const string stepName = "Step_";
+        private const string partName = "Part_"; 
+
         private StreamWriter currentLog = null;
 
         public string CurrentLogPath { get; private set; } = string.Empty;
@@ -104,19 +107,20 @@ namespace ML_Automator
             // Clear current research for next Step
             currentResearchData.Clear();
         }
-        public void StartNewLog(string name, ref string activeYaml)
+        public void StartNewLog(int step, int part, ref string activeYaml)
         {
+            string folderFilePathName = $"{stepName}{step}/{partName}{part}";
             elapsedTime = 0;
             updateCount = 0;
-            if (Directory.Exists($"{researchStartPath}{name}"))
+            if (Directory.Exists($"{researchStartPath}{folderFilePathName}"))
             {
-                DateTime lastWritten = Directory.GetLastWriteTime($"{researchStartPath}{name}");
-                Util.PrintConsoleMessage(ConsoleColor.DarkYellow, $"Log Folder with Path '{researchStartPath}{name}' already exists, moving folder to ./backup/");
-                Directory.Move($"{researchStartPath}{name.Substring(0, name.LastIndexOf('/'))}", $"{researchBackupPath}/{name.Substring(0, name.LastIndexOf('/'))}_{lastWritten.ToString("ddMM__HH-mm-ss_ffff")}");
+                DateTime lastWritten = Directory.GetLastWriteTime($"{researchStartPath}{folderFilePathName}");
+                Util.PrintConsoleMessage(ConsoleColor.DarkYellow, $"Log Folder with Path '{researchStartPath}{step}' already exists, moving folder to ./backup/");
+                Directory.Move($"{researchStartPath}{stepName}{step}", $"{researchBackupPath}/{stepName}{step}_{lastWritten.ToString("ddMM__HH-mm-ss_ffff")}");
             }
 
-            Util.CreateFolderIfNoneExists($"{researchStartPath}{name}");
-            StreamWriter writer = File.CreateText($"{researchStartPath}{name}/{yamlFileName}");
+            Util.CreateFolderIfNoneExists($"{researchStartPath}{folderFilePathName}");
+            StreamWriter writer = File.CreateText($"{researchStartPath}{folderFilePathName}/{yamlFileName}");
             if (writer == null)
             {
                 throw new Exception($"Failed to create and open Yaml for ResearchLog.");
@@ -126,12 +130,12 @@ namespace ML_Automator
 
             if (currentLog != null)
                 currentLog.Close();
-            currentLog = File.CreateText($"{researchStartPath}{name}/{logFileName}");
-            CurrentLogPath = name;
+            currentLog = File.CreateText($"{researchStartPath}{step}/{logFileName}");
+            CurrentLogPath = folderFilePathName;
             // Create a new data point
-            if (currentResearchData.ContainsKey(name))
-                currentResearchData.Remove(name);
-            currentResearchData.Add(name, new ResearchSessionData(name));
+            if (currentResearchData.ContainsKey(folderFilePathName))
+                currentResearchData.Remove(folderFilePathName);
+            currentResearchData.Add(folderFilePathName, new ResearchSessionData(folderFilePathName));
 
             Util.PrintConsoleMessage(ConsoleColor.DarkGreen, "Cloned New Yaml for Research Log Successfully");
         }

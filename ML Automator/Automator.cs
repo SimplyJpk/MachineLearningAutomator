@@ -102,7 +102,7 @@ namespace ML_Automator
                             throw new Exception($"Error while generating YAML for trainer, failed to generate unique trainner after { trainerGenerator.SessionsPerStep } attempts.");
                         }
                     }
-                    InitializeAndRunProcess(ref anacondaProcess, anacondaProcessString, AnacondaDataOut, AnacondaDataOut, anacondaSettings.GetArgumentString());
+                    InitializeAndRunProcess(ref anacondaProcess, anacondaProcessString, AnacondaDataOut, AnacondaDataOut, $"--run-id={trainerGenerator.currentRunID} {anacondaSettings.GetArgumentString()}");
                 }
                 // We only want to Launch Unity Manually if Env variable isn't set since Anaconda should launch it.
                 else if (!anacondaSettings.IsUsingEnv())

@@ -37,6 +37,8 @@ namespace ML_Automator
         private string previousModifiedYaml = string.Empty;
         /// <summary> The current Yaml used for trainning. </summary>
         private string activeModifiedYaml = string.Empty;
+        /// <summary> Added to the beggining of Anaconda Arguments as it simplifies summaries</summary>
+        public string currentRunID { get; private set; } = string.Empty;
 
         public TrainerGenerator(ResearchTracker tracker)
         {
@@ -96,7 +98,8 @@ namespace ML_Automator
                 return false;
             }
             else
-            { 
+            {
+                currentRunID = $"Step{BaseMultiplier}-Part{MultiStep}";
                 if (Step > 0)
                 {
                     if (MultiStep == 0)
@@ -122,7 +125,7 @@ namespace ML_Automator
                 Util.PrintConsoleMessage(ConsoleColor.Green, $"Starting Train Loop {BaseMultiplier}\t|\t STEP: {MultiStep}/{SessionsPerStep}");
                 // And initialize a new Log that represents the current Session/Part
                 // Start a new Log, Current Step ie; 2 (as a folder) and then in 
-                researchTracker.StartNewLog($"Step_{BaseMultiplier}/Part_{MultiStep}", ref activeModifiedYaml);
+                researchTracker.StartNewLog(BaseMultiplier,MultiStep, ref activeModifiedYaml);
                 return true;
             }
         }
