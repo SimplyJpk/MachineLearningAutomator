@@ -107,16 +107,8 @@ namespace ML_Automator
                         // This means we've moved up to the next BaseMultiplier or next 'level' of trainning, we ask our Logger to prepare us ranks for all the previous sessions before we start a new log.
                         researchTracker.RankStepSessions();
                     }
-                    if (Directory.Exists("./summaries"))
-                    {
-                        Directory.Move("./summaries", $"{researchTracker.CurrenResearchLogPath}/summaries");
-                        Util.PrintConsoleMessage(ConsoleColor.Green, $"Completed sumarries moved to log directory");
-                    }
-                    if (Directory.Exists("./models"))
-                    {
-                        Directory.Move("./models", $"{researchTracker.CurrenResearchLogPath}/models");
-                        Util.PrintConsoleMessage(ConsoleColor.Green, $"Completed model moved to log directory");
-                    }
+                    Util.CopyFolderContentsTo("./summaries", $"{researchTracker.CurrentResearchStepFolder}/summaries");
+                    Util.CopyFolderContentsTo("./models", $"{researchTracker.CurrenResearchLogPath}/models");
                 }
                 // Otherwise we save the Modified Yaml
                 File.WriteAllText(modifiedTrainerPath + modifiedTrainerName, activeModifiedYaml);
