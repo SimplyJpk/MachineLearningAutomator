@@ -88,5 +88,21 @@ namespace ML_Automator
                 throw new Exception($"Failed to create new directory at '{path}'");
             }
         }
+
+        public static void CopyFolderContentsTo(string source, string target)
+        {
+            if (Directory.Exists(source))
+            {
+                // Directories
+                foreach (string dir in Directory.GetDirectories(source, "*",
+                    SearchOption.AllDirectories))
+                    Directory.CreateDirectory(target);
+                // Files
+                foreach (string newPath in Directory.GetFiles(source, "*.*",
+                    SearchOption.AllDirectories))
+                    File.Copy(newPath, target, true);
+                PrintConsoleMessage(ConsoleColor.Green, $"Moved contents of '{source}' to '{target}'");
+            }
+        }
     }
 }
