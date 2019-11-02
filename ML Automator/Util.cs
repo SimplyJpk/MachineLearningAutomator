@@ -98,9 +98,9 @@ namespace ML_Automator
                     SearchOption.AllDirectories))
                     Directory.CreateDirectory(target);
                 // Files
-                foreach (string newPath in Directory.GetFiles(source, "*.*",
+                foreach (string dir in Directory.GetFiles(source, "*.*",
                     SearchOption.AllDirectories))
-                    File.Copy(newPath, target, true);
+                    File.Copy(dir, dir.Replace(source, target), true);
                 PrintConsoleMessage(ConsoleColor.Green, $"Moved contents of '{source}' to '{target}'");
             }
         }
