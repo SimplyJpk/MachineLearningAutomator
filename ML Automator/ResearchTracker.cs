@@ -117,7 +117,7 @@ namespace ML_Automator
             if (Directory.Exists($"{researchStartPath}{folderFilePathName}"))
             {
                 DateTime lastWritten = Directory.GetLastWriteTime($"{researchStartPath}{folderFilePathName}");
-                Util.PrintConsoleMessage(ConsoleColor.DarkYellow, $"Log Folder with Path '{researchStartPath}{step}' already exists, moving folder to ./backup/");
+                Util.PrintConsoleMessage(ConsoleColor.DarkYellow, $"Log Folder with Path '{researchStartPath}{folderFilePathName}' already exists, moving folder to ./backup/");
                 Directory.Move($"{researchStartPath}{stepName}{step}", $"{researchBackupPath}/{stepName}{step}_{lastWritten.ToString("ddMM__HH-mm-ss_ffff")}");
             }
 
