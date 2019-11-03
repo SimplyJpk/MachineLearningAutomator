@@ -89,19 +89,23 @@ namespace ML_Automator
             }
         }
 
-        public static void CopyFolderContentsTo(string source, string target)
+        public static void MoveFolderContents(DirectoryInfo source, DirectoryInfo target)
         {
-            if (Directory.Exists(source))
+            if (source.Exists)
             {
-                // Directories
-                foreach (string dir in Directory.GetDirectories(source, "*",
-                    SearchOption.AllDirectories))
-                    Directory.CreateDirectory(target);
-                // Files
-                foreach (string dir in Directory.GetFiles(source, "*.*",
-                    SearchOption.AllDirectories))
-                    File.Copy(dir, dir.Replace(source, target), true);
+                // We make sure our Target Folder exists, as Directory.MoveTo will not create it
+                if (!target.Exists)
+                    Directory.CreateDirectory(target.FullName);
+                foreach (DirectoryInfo dir in source.GetDirectories())
+                    dir.MoveTo($"{target.FullName}/{dir.Name}");
+                foreach (FileInfo file in source.GetFiles())
+                    file.MoveTo(Path.Combine(target.FullName, file.Name));
                 PrintConsoleMessage(ConsoleColor.Green, $"Moved contents of '{source}' to '{target}'");
+            }
+            else
+            {
+                // Just some information to help debugging should it be a problem.
+                PrintConsoleMessage(ConsoleColor.DarkYellow, $"Failed to move directory contents '{source.FullName}', Directory doesn't exist?");
             }
         }
     }
