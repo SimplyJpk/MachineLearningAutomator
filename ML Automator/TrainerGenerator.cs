@@ -17,11 +17,9 @@ namespace ML_Automator
         public int SessionsPerStep { get; } = int.MinValue;
 
         private const string trainingDefaultsPath = "./Resources/TrainingDefaults.json";
-        private readonly string trainingDefaultsString = string.Empty;
         private readonly Dictionary<string, string> trainingDefaultConfig = null;
 
         private const string trainingMaxPath = "./Resources/TrainingMax.json";
-        private readonly string trainingMaxString = string.Empty;
         private readonly Dictionary<string, string> trainingMaxConfig = null;
 
         /// <summary> Dictionary of the Iterative values so that we don't repeatedly generate the same values for each session. </summary>
@@ -38,14 +36,14 @@ namespace ML_Automator
         /// <summary> The current Yaml used for trainning. </summary>
         private string activeModifiedYaml = string.Empty;
         /// <summary> Added to the beggining of Anaconda Arguments as it simplifies summaries</summary>
-        public string currentRunID { get; private set; } = string.Empty;
+        public string CurrentRunID { get; private set; } = string.Empty;
 
         public TrainerGenerator(ResearchTracker tracker)
         {
             researchTracker = tracker;
             // Load our JSON files into dictionaries so that we can manipulate these when generating new Trainning Data.
-            Util.LoadJsonFromLocation(trainingDefaultsPath, ref trainingDefaultsString, ref trainingDefaultConfig);
-            Util.LoadJsonFromLocation(trainingMaxPath, ref trainingMaxString, ref trainingMaxConfig);
+            Util.LoadJsonFromLocation(trainingDefaultsPath, trainingDefaultConfig);
+            Util.LoadJsonFromLocation(trainingMaxPath, trainingMaxConfig);
             // Read contents of file to our Yaml.
             defaultYamlString = Util.ReadFile(defaultYamlTrainerPath);
             // How many times we train at the current 'base' value with the combination of configurations
@@ -66,8 +64,7 @@ namespace ML_Automator
             // Copy our Default Trainer
             activeModifiedYaml = defaultYamlString;
             // MultiStep is used to determine Which combination of configuration settings to use for current training
-            int MultiStep;
-            int BaseMultiplier = (Math.DivRem(Step, trainingMaxConfig.Count + 1, out MultiStep) % trainingSteps) ;
+            int BaseMultiplier = (Math.DivRem(Step, trainingMaxConfig.Count + 1, out int MultiStep) % trainingSteps) ;
             /// I've kept the below incase I return to use binary step if I refine my variables, 10 is just to omany as it means 1000 sessions of trainning which is insane.
             //x // We convert our MultiStep to a Binary representation so that we can check against the chars for if we want to adjust the value from the Multiplier
             //x string BinaryStep = Convert.ToString(MultiStep, 2).PadLeft(trainingMaxConfig.Count, '0');
@@ -99,7 +96,7 @@ namespace ML_Automator
             }
             else
             {
-                currentRunID = $"Step{BaseMultiplier}-Part{MultiStep}";
+                CurrentRunID = $"Step{BaseMultiplier}-Part{MultiStep}";
                 if (Step > 0)
                 {
                     if (MultiStep == 0)

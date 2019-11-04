@@ -36,8 +36,8 @@ namespace ML_Automator
 
         private int updateCount = 0;
 
-        Dictionary<string, ResearchSessionData> currentResearchData = new Dictionary<string, ResearchSessionData>();
-        Dictionary<string, ResearchSessionData> allResearchData = new Dictionary<string, ResearchSessionData>();
+        private readonly Dictionary<string, ResearchSessionData> currentResearchData = new Dictionary<string, ResearchSessionData>();
+        private readonly Dictionary<string, ResearchSessionData> allResearchData = new Dictionary<string, ResearchSessionData>();
 
         // We may need this
         private float elapsedTime = 0.0f;
@@ -145,10 +145,10 @@ namespace ML_Automator
         public void UpdateTracker(string update)
         {
             updateCount++;
-            string steps = Util.MatchWithQuery("STEPS", ref update);
-            string elapsed = Util.MatchWithQuery("ELAPSED", ref update);
-            string mean_reward = Util.MatchWithQuery("MEAN_REWARD", ref update);
-            string std_reward = Util.MatchWithQuery("STD_REWARD", ref update);
+            string steps = Util.MatchWithQuery("STEPS", update);
+            string elapsed = Util.MatchWithQuery("ELAPSED", update);
+            string mean_reward = Util.MatchWithQuery("MEAN_REWARD", update);
+            string std_reward = Util.MatchWithQuery("STD_REWARD", update);
             // Update Elapsed float
             elapsedTime = float.Parse(elapsed);
             // Update our session data

@@ -39,7 +39,7 @@ namespace ML_Automator
         };
 
         /// <summary> Returns the matched value from the Regex key provided and the input string used. No error handling. </summary>
-        public static string MatchWithQuery(string RegexKey, ref string Input)
+        public static string MatchWithQuery(string RegexKey, string Input)
         {
             return TrainningQueries[RegexKey].Match(Input).Groups[1].Value;
         }
@@ -59,12 +59,12 @@ namespace ML_Automator
         }
 
         /// <summary> A helper method that attempts to read the file at the path provided and fills _jsonString with a raw json string and the _config file with the values from the json. </summary>
-        public static void LoadJsonFromLocation(string _path, ref string _jsonString, ref Dictionary<string, string> _config)
+        public static void LoadJsonFromLocation(string _path, Dictionary<string, string> _config)
         {
             Util.PrintConsoleMessage(ConsoleColor.Yellow, $"Loading JSON from '{_path}'");
             if (File.Exists(_path))
             {
-                _jsonString = File.ReadAllText(_path);
+                string _jsonString = File.ReadAllText(_path);
                 if (!string.IsNullOrEmpty(_jsonString))
                 {
                     _config = JsonConvert.DeserializeObject<Dictionary<string, string>>(_jsonString);

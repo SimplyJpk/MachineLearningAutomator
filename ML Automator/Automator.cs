@@ -14,9 +14,9 @@ namespace ML_Automator
         // Seperate thread for Unity (If we're not using 'env' command line from Anaconda)
         private Process unityProcess = null;
 
-        private AnacondaSettings anacondaSettings = null;
-        private TrainerGenerator trainerGenerator = null;
-        private ResearchTracker researchTracker = null;
+        private readonly AnacondaSettings anacondaSettings = null;
+        private readonly TrainerGenerator trainerGenerator = null;
+        private readonly ResearchTracker researchTracker = null;
 
         private const string anacondaProcessString = @"./Resources/AnacondaLoad.bat";
         private const string unityProcessString = @"../MLScene/UnityEnvironment.exe";
@@ -102,7 +102,7 @@ namespace ML_Automator
                             throw new Exception($"Error while generating YAML for trainer, failed to generate unique trainner after { trainerGenerator.SessionsPerStep } attempts.");
                         }
                     }
-                    InitializeAndRunProcess(ref anacondaProcess, anacondaProcessString, AnacondaDataOut, AnacondaDataOut, $"--run-id={trainerGenerator.currentRunID} {anacondaSettings.GetArgumentString()}");
+                    InitializeAndRunProcess(ref anacondaProcess, anacondaProcessString, AnacondaDataOut, AnacondaDataOut, $"--run-id={trainerGenerator.CurrentRunID} {anacondaSettings.GetArgumentString()}");
                 }
                 // We only want to Launch Unity Manually if Env variable isn't set since Anaconda should launch it.
                 else if (!anacondaSettings.IsUsingEnv())
@@ -128,6 +128,8 @@ namespace ML_Automator
             }
         }
 
+        /// <summary> The Stdout stream from Anaconda is passed into this method, and we process what is passed in, this is often just the update logs.
+        /// <para>Additional checks are made to catch potential failure points that could lock up training.</para></summary>
         void AnacondaDataOut(object sender, DataReceivedEventArgs e)
         {
             // Check if null, this appears to only happen if Anaconda shutdowns faster than normal, without this the application risks running into an Null Exception error
@@ -148,12 +150,9 @@ namespace ML_Automator
                 Util.PrintConsoleMessage(ConsoleColor.Gray, $"ANNA: {e.Data}");
                 researchTracker.UpdateTracker(e.Data);
             }
-            //? If we run more than 2 instances, we run the chance of over stepping our trainning by a couple steps.
-            //? This causes Tensorflow to try include the trainning data with other logs? THIS cause the whole process to lock up and kill trainning.
-            //? I must have spent over 8 hours over 2 days trying to find any possible way to simply latch and change the steps (Would cause some noise in trainning) with zero success.
-            //? THIS works, but it is terrible and likely upsets the OS, hopefully this isn't causing additional noise, but the speed boost from trainning over 2 instances of unity at once
-            //? Makes this almost a nessesity.
-            else if (e.Data.Contains(":Exported")) // This happens when Tensorflow is trying to edit a saved file or temp file, for some reason it hangs. Not quite sure why.
+            //! We check for this string as it means that TensorFlow during training over trainned by a couple steps, it would then edit files and squeeze this information into the logs.
+            //! however, the way we have Anaconda running, I don't believe has the correct permissions, as it hangs on this and training stops until it is manually shutdown.
+            else if (e.Data.Contains(":Exported"))
             {
                 Util.PrintConsoleMessage(ConsoleColor.Gray, $"ANNA: {e.Data}");
                 foreach (var process in Process.GetProcessesByName("python"))
@@ -162,6 +161,7 @@ namespace ML_Automator
                 }
                 foreach (var process in Process.GetProcessesByName(anacondaSettings.EnvironmentName))
                 {
+                    // Sometimes after killing the python instances Anaconda shuts down immediately after, I ran into a few instances where it would survive and continue to hang.
                     if (!process.HasExited)
                         process.Kill();
                 }
@@ -174,18 +174,19 @@ namespace ML_Automator
             }
         }
 
+        /// <summary> If Anaconda isn't managing the Unity Scenes, and Unity Data is returned through this and displayed.</summary>
         void UnityDataOut(object sender, DataReceivedEventArgs e)
         {
             if (e.Data == null)
                 return;
-            Console.WriteLine($"UNITY: {e.Data}");
+            Util.PrintConsoleMessage(ConsoleColor.Gray, $"UNITY: {e.Data}");
         }
-        // In my time of use, I don't think this was called even once, but I have it seperate just to make any potential errors (Should they happen) more obvious.
+        /// <summary> If Unity Errors while running, we can catch the output (If we're managing the Unity instances). </summary>
         void UnityErrorOut(object sender, DataReceivedEventArgs e)
         {
             if (e.Data == null)
                 return;
-            Console.WriteLine($"UNITY ERROR: {e.Data}");
+            Util.PrintConsoleMessage(ConsoleColor.Red, $"UNITY ERROR: {e.Data}");
         }
     }
 }

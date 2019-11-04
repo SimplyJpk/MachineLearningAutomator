@@ -13,8 +13,7 @@ namespace ML_Automator
         public string EnvironmentName { get; } = string.Empty;
 
         private readonly string anaConfigPath = "./Resources/AnnaConfig.json";
-        private string anaConfigString = string.Empty;
-        private Dictionary<string, string> anaConfig = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> anaConfig = new Dictionary<string, string>();
 
         private bool hasArgsChanged = false;
         private string argumentString = string.Empty;
@@ -26,7 +25,7 @@ namespace ML_Automator
         {
             Util.PrintConsoleMessage(ConsoleColor.Yellow, $"Loading Settings For Anaconda.");
             // Load our JSON files into dictionaries so we can process this further when we have to run Annaconda which has some commandlines that want "--cmd" and others that need "--cmd=40" and will complain.
-            Util.LoadJsonFromLocation(anaConfigPath, ref anaConfigString, ref anaConfig);
+            Util.LoadJsonFromLocation(anaConfigPath, anaConfig);
             hasArgsChanged = true;
 
             if (anaConfig.ContainsKey("env"))
