@@ -25,14 +25,24 @@ namespace ML_Automator
         // Used to track Sessions, the Iterations between step milestones.
         private int sessionCounter = 0;
 
+        private string configPath = "./Resources/config.json";
+        private Dictionary<string, string> config = null;
+
         public Automator()
         {
+            Util.LoadJsonFromLocation(configPath, config);
             // Create an Instance of AnacondaSettings which will also Load Json in Constructor
             anacondaSettings = new AnacondaSettings();
             // Create our Logger, it'll do a prilimary check to make sure folders exist
             researchTracker = new ResearchTracker();
             // Creates the Instance for Trainer which loads Json and will also generate new Trainning Data
-            trainerGenerator = new TrainerGenerator(researchTracker);
+            int.TryParse(config["STEPS"], out int steps);
+            if (steps == 0)
+            {
+                steps = 5;
+                Util.PrintConsoleMessage(ConsoleColor.Yellow, $"Failed to parse config.json for Steps, STEPS set to 5");
+            }
+            trainerGenerator = new TrainerGenerator(researchTracker, steps);
             Util.PrintConsoleMessage(ConsoleColor.Green, $"All Configs Loaded.");
 
             //! Allows rapid generation of logs without running training. Good for debugging.

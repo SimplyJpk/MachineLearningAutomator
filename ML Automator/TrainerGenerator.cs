@@ -38,9 +38,10 @@ namespace ML_Automator
         /// <summary> Added to the beggining of Anaconda Arguments as it simplifies summaries</summary>
         public string CurrentRunID { get; private set; } = string.Empty;
 
-        public TrainerGenerator(ResearchTracker tracker)
+        public TrainerGenerator(ResearchTracker tracker, int steps)
         {
             researchTracker = tracker;
+            trainingSteps = steps;
             // Load our JSON files into dictionaries so that we can manipulate these when generating new Trainning Data.
             Util.LoadJsonFromLocation(trainingDefaultsPath, trainingDefaultConfig);
             Util.LoadJsonFromLocation(trainingMaxPath, trainingMaxConfig);
@@ -72,7 +73,7 @@ namespace ML_Automator
             int ConfigIndex = 0;
             foreach (var item in trainingMaxConfig.Keys)
             {
-                float IncreasedValue = (trainningIterationValues[item] * (BaseMultiplier + (ConfigIndex == MultiStep ? 1 : 0))); //x(BinaryStep[ConfigIndex] == '1' ? 1f : 0f)));
+                float IncreasedValue = (trainningIterationValues[item] * (BaseMultiplier + (ConfigIndex == MultiStep ? 1 : 0)));
                 // If it doesn't contain a period, we want a whole value, not a decimal
                 if (!trainingMaxConfig[item].Contains('.'))
                 {

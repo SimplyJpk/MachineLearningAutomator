@@ -66,6 +66,9 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="Resources\config.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\Curriculum\ML1Brain.json" />
     <None Include="Resources\TrainingDefaults.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
