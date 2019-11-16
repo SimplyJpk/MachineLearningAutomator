@@ -30,7 +30,7 @@ namespace ML_Automator
 
         public Automator()
         {
-            Util.LoadJsonFromLocation(configPath, config);
+            Util.LoadJsonFromLocation(configPath, ref config);
             // Create an Instance of AnacondaSettings which will also Load Json in Constructor
             anacondaSettings = new AnacondaSettings();
             // Create our Logger, it'll do a prilimary check to make sure folders exist

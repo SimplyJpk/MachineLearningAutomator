@@ -59,7 +59,7 @@ namespace ML_Automator
         }
 
         /// <summary> A helper method that attempts to read the file at the path provided and fills _jsonString with a raw json string and the _config file with the values from the json. </summary>
-        public static void LoadJsonFromLocation(string _path, Dictionary<string, string> _config)
+        public static void LoadJsonFromLocation(string _path, ref Dictionary<string, string> _config)
         {
             Util.PrintConsoleMessage(ConsoleColor.Yellow, $"Loading JSON from '{_path}'");
             if (File.Exists(_path))

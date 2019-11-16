@@ -42,9 +42,10 @@ namespace ML_Automator
         {
             researchTracker = tracker;
             trainingSteps = steps;
+            Util.PrintConsoleMessage(ConsoleColor.Green, $"TrainerGenerator using {steps} step{ (steps > 1 ? "s" : string.Empty)} for training");
             // Load our JSON files into dictionaries so that we can manipulate these when generating new Trainning Data.
-            Util.LoadJsonFromLocation(trainingDefaultsPath, trainingDefaultConfig);
-            Util.LoadJsonFromLocation(trainingMaxPath, trainingMaxConfig);
+            Util.LoadJsonFromLocation(trainingDefaultsPath, ref trainingDefaultConfig);
+            Util.LoadJsonFromLocation(trainingMaxPath, ref trainingMaxConfig);
             // Read contents of file to our Yaml.
             defaultYamlString = Util.ReadFile(defaultYamlTrainerPath);
             // How many times we train at the current 'base' value with the combination of configurations
