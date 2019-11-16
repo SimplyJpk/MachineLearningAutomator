@@ -20,7 +20,7 @@ namespace ML_Automator
             catch (Exception ex)
             {
                 // This helps identify problems with the application as most of the training is done when i'm not around, I was missing when it was crashing.
-                Util.PrintConsoleMessage(ConsoleColor.Red, $"Application Error: {ex.Message}");
+                Util.PrintConsoleMessage(ConsoleColor.Red, $"Application Error: {ex.Message}\n\nSTACK\n{ex.StackTrace}");
                 Console.ReadLine();
                 throw;
             }
