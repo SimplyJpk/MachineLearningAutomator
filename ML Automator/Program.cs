@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ML_Automator
 {
     /// <summary>
-    /// Entry point for C# Console which will create the automator
+    /// Entry point for C# Console which will create the automator.
     /// </summary>
     class Program
     {
@@ -19,7 +15,8 @@ namespace ML_Automator
             }
             catch (Exception ex)
             {
-                // This helps identify problems with the application as most of the training is done when i'm not around, I was missing when it was crashing.
+                // We attempt to catch the Exception as these were happening long after research would be started, with no indication of what caused it.
+                // This helps by at least pointing to what crashed the app.
                 Util.PrintConsoleMessage(ConsoleColor.Red, $"Application Error: {ex.Message}\n\nSTACK\n{ex.StackTrace}");
                 Console.ReadLine();
                 throw;
