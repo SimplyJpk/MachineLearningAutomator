@@ -5,16 +5,18 @@ namespace ML_Automator
 {
     class AnacondaSettings
     {
+        /// <summary>Returns whether or not Anaconda will be trying to launch Unity itself. If it is, we need to act differently.</summary>
+        public bool IsUsingEnv() { return anaConfig.ContainsKey("env"); }
         public string EnvironmentName { get; } = string.Empty;
 
         private readonly string anaConfigPath = "./Resources/AnnaConfig.json";
         private readonly Dictionary<string, string> anaConfig = new Dictionary<string, string>();
 
+        /// <summary>We only update argumentString when an arguement has changed, it no longer does so, but incase someone else implements something that needs this, this'll at least update arguments before launching. </summary>
         private bool hasArgsChanged = false;
         private string argumentString = string.Empty;
 
         /// <summary> Returns true if AnnaConfig.Json contains the 'env' key which enables Anaconda to manage Unity instances for us.</summary>
-        public bool IsUsingEnv() { return anaConfig.ContainsKey("env"); }
 
         public AnacondaSettings()
         {
@@ -41,7 +43,7 @@ namespace ML_Automator
                 foreach (string item in anaConfig.Keys)
                 {
                     // Anaconda will complain and shutdown if we pass a parameter after an argument when it isn't expecting them.
-                    if (!String.IsNullOrEmpty(anaConfig[item]))
+                    if (!string.IsNullOrEmpty(anaConfig[item]))
                         argumentString += $"--{item}={anaConfig[item]} ";
                     else
                         argumentString += $"--{item} ";
@@ -55,13 +57,14 @@ namespace ML_Automator
             return argumentString;
         }
 
-        public string GetEnvironmentName(string arg)
+        /// <summary>Changes an argument used by anaconda, no checks are used, and next time ArgumentString is returned a new arg list is returned.</summary>
+        public void ChangeArgument(string arg, string value)
         {
-            if (anaConfig.ContainsKey(arg))
-            {
-                return anaConfig[arg];
-            }
-            return "";
+            anaConfig[arg] = value;
+            // Incase we're trying to remove a value by making it empty, we remove it.
+            if (string.IsNullOrEmpty(value))
+                anaConfig.Remove(arg);
+            hasArgsChanged = true;
         }
     }
 }
