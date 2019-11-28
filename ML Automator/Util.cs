@@ -2,17 +2,16 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace ML_Automator
 {
     public static class Util
     {
-        public static ConsoleColor DefaultConsoleColour = ConsoleColor.Gray;
+        /// <summary> Colour that will be used for all console messages that aren't printed through PrintConsoleMessage.</summary>
+        private readonly static ConsoleColor DefaultConsoleColour = ConsoleColor.Gray;
 
+        /// <summary> Prints a message to console using the colour provided before returning the colour to the default colour.</summary>
         public static void PrintConsoleMessage(ConsoleColor color, string message)
         {
             Console.ForegroundColor = color;
@@ -59,29 +58,29 @@ namespace ML_Automator
         }
 
         /// <summary> A helper method that attempts to read the file at the path provided and fills _jsonString with a raw json string and the _config file with the values from the json. </summary>
-        public static void LoadJsonFromLocation(string _path, ref Dictionary<string, string> _config)
+        public static void LoadJsonFromLocation(string path, ref Dictionary<string, string> config)
         {
-            Util.PrintConsoleMessage(ConsoleColor.Yellow, $"Loading JSON from '{_path}'");
-            if (File.Exists(_path))
+            PrintConsoleMessage(ConsoleColor.Yellow, $"Loading JSON from '{path}'");
+            if (File.Exists(path))
             {
-                string _jsonString = File.ReadAllText(_path);
+                string _jsonString = File.ReadAllText(path);
                 if (!string.IsNullOrEmpty(_jsonString))
                 {
-                    _config = JsonConvert.DeserializeObject<Dictionary<string, string>>(_jsonString);
+                    config = JsonConvert.DeserializeObject<Dictionary<string, string>>(_jsonString);
                 }
-                if (_config == null)
+                if (config == null)
                     throw new Exception($"Dictionary is null, JSON Error?");
             }
             else
-                throw new Exception($"JSON file path '{_path}' does not Exist.");
+                throw new Exception($"JSON file path '{path}' does not Exist.");
         }
 
         public static void CreateFolderIfNoneExists(string path)
         {
-            DirectoryInfo info = Directory.CreateDirectory(path);
-            if (info.Exists)
+            DirectoryInfo _info = Directory.CreateDirectory(path);
+            if (_info.Exists)
             {
-                PrintConsoleMessage(ConsoleColor.Yellow, $"Created directory at '{info.FullName}'");
+                PrintConsoleMessage(ConsoleColor.Yellow, $"Created directory at '{_info.FullName}'");
             }
             else
             {
@@ -89,6 +88,7 @@ namespace ML_Automator
             }
         }
 
+        /// <summary> Moves the passed in source folder contents and sub-directories to a new folder recursively. </summary>
         public static void MoveFolderContents(DirectoryInfo source, DirectoryInfo target)
         {
             if (source.Exists)
@@ -100,11 +100,10 @@ namespace ML_Automator
                     dir.MoveTo($"{target.FullName}/{dir.Name}");
                 foreach (FileInfo file in source.GetFiles())
                     file.MoveTo(Path.Combine(target.FullName, file.Name));
-                PrintConsoleMessage(ConsoleColor.Green, $"Moved contents of '{source}' to '{target}'");
+                PrintConsoleMessage(ConsoleColor.Green, $"Contents of '{source}' moved to '{target}'");
             }
             else
             {
-                // Just some information to help debugging should it be a problem.
                 PrintConsoleMessage(ConsoleColor.DarkYellow, $"Failed to move directory contents '{source.FullName}', Directory doesn't exist?");
             }
         }
