@@ -8,5 +8,5 @@
   "keep-checkpoints": "50",
   //"lesson": "0",
   "save-freq": "50000",
-  "num-envs": "8"
+  "num-envs": "4"
 }
