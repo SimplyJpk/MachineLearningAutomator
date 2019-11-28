@@ -1,32 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
+
 namespace ML_Automator
 {
     class Automator
     {
-        // A seperate thread that is running our Anaconda environment
+        /// <summary>A seperate thread that is running our Anaconda environment. </summary>
         private Process anacondaProcess = null;
-        // Seperate thread for Unity (If we're not using 'env' command line from Anaconda)
+        /// <summary>Seperate thread for Unity (If we're not using 'env' command line from Anaconda). </summary>
         private Process unityProcess = null;
 
         private readonly AnacondaSettings anacondaSettings = null;
         private readonly TrainerGenerator trainerGenerator = null;
         private readonly ResearchTracker researchTracker = null;
 
+        /// <summary>Path of the Bat file used to alunch anaconda.</summary>
         private const string anacondaProcessString = @"./Resources/AnacondaLoad.bat";
+        /// <summary>If this value is changed, it must be changed within AnnaConfig.json as well, 'env' must point to the directory of the executable.</summary>
         private const string unityProcessString = @"../MLScene/UnityEnvironment.exe";
 
         private bool launchUnity = false;
         // Used to track Sessions, the Iterations between step milestones.
         private int sessionCounter = 0;
 
-        private string configPath = "./Resources/config.json";
-        private Dictionary<string, string> config = null;
+        // Config was added quite late into development, and only consists of two lines. More could be added with little effort.
+        private readonly string configPath = "./Resources/config.json";
+        private readonly Dictionary<string, string> config = null;
 
         public Automator()
         {
@@ -36,29 +37,22 @@ namespace ML_Automator
             // Create our Logger, it'll do a prilimary check to make sure folders exist
             researchTracker = new ResearchTracker();
             // Creates the Instance for Trainer which loads Json and will also generate new Trainning Data
-            int.TryParse(config["STEPS"], out int steps);
-            if (steps == 0)
+            if (!int.TryParse(config["STEPS"], out int steps))
             {
                 steps = 5;
-                Util.PrintConsoleMessage(ConsoleColor.Yellow, $"Failed to parse config.json for Steps, STEPS set to 5");
+                Util.PrintConsoleMessage(ConsoleColor.Yellow, $"Failed to parse config.json for Steps, STEPS = 5");
             }
-            trainerGenerator = new TrainerGenerator(researchTracker, steps);
+            if (!bool.TryParse(config["SKIPSAMETRAINER"], out bool skipSameTrainers))
+            {
+                skipSameTrainers = true;
+                Util.PrintConsoleMessage(ConsoleColor.Yellow, $"Failed to parse config.json for SkipSameTrainer, SKIPSAMETRAINER = true");
+            }
+            trainerGenerator = new TrainerGenerator(researchTracker, steps, skipSameTrainers);
             Util.PrintConsoleMessage(ConsoleColor.Green, $"All Configs Loaded.");
-
-            //! Allows rapid generation of logs without running training. Good for debugging.
-            //x int count = 0;
-            //x while (count < trainerGenerator.SessionsPerStep * 20)
-            //x {
-            //x     researchTracker.RunComplete();
-            //x     sessionCounter++;
-            //x     trainerGenerator.GenerateNewTrainerYaml(sessionCounter - 1);
-            //x     // We start this after Anaconda Starts as there will be some significant delay between the timer
-            //x     //Tracker.StartNewLog($"Step_{TrainningCounter}");
-            //x     count++;
-            //x }
-            //x Console.ReadLine();
         }
 
+        /// <summary>Starts a new process using the process passed in. Filename can be anything natively executable by Windows.
+        /// Actions are passed in so that we can hook in different methods for Outputs. ie (Unity, Anaconda) streams. </summary>
         void InitializeAndRunProcess(ref Process process, string fileName, Action<object, DataReceivedEventArgs> dataOutput, Action<object, DataReceivedEventArgs> errorOut, string args)
         {
             Util.PrintConsoleMessage(ConsoleColor.Yellow, $"Creating new instance '{fileName}'");
@@ -84,11 +78,10 @@ namespace ML_Automator
             process.Start();
             process.BeginOutputReadLine();
             process.BeginErrorReadLine();
-            // We set this high to give it Priority on the CPU in an attempt to reduce noise from the Operating System itself.
-            process.PriorityClass = ProcessPriorityClass.High;
             Util.PrintConsoleMessage(ConsoleColor.Green, $"Instance Started!");
         }
 
+        /// <summary>The life of the application is spent inside this method.</summary>
         public void MLAutomate()
         {
             while (true)
@@ -112,7 +105,7 @@ namespace ML_Automator
                             throw new Exception($"Error while generating YAML for trainer, failed to generate unique trainner after { trainerGenerator.SessionsPerStep } attempts.");
                         }
                     }
-                    InitializeAndRunProcess(ref anacondaProcess, anacondaProcessString, AnacondaDataOut, AnacondaDataOut, $"--run-id={trainerGenerator.CurrentRunID} {anacondaSettings.GetArgumentString()}");
+                    InitializeAndRunProcess(ref anacondaProcess, anacondaProcessString, AnacondaDataOut, AnacondaDataOut, $"{trainerGenerator.TrainerFullPath} --run-id={trainerGenerator.CurrentRunID} { anacondaSettings.GetArgumentString()}");
                 }
                 // We only want to Launch Unity Manually if Env variable isn't set since Anaconda should launch it.
                 else if (!anacondaSettings.IsUsingEnv())
